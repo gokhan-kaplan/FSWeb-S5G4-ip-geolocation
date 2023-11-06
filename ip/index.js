@@ -1,26 +1,25 @@
 //axios import buraya gelecek
+import axios from "axios";
 
 var benimIP;
-
 
 // ------------ değiştirmeyin --------------
 // licensed to Ergineer 2022
 require("babel-core/register");
 require("babel-polyfill");
-async function ipAdresimiAl(){
-	await axios({
-		method: 'get',
-		url: 'https://apis.ergineer.com/ipadresim',
-	})
-	.then(function (response) {
-		return response.data
-	})
-	.then(function (a) {
-		benimIP=a
-	});
-}				
+async function ipAdresimiAl() {
+  await axios({
+    method: "get",
+    url: "https://apis.ergineer.com/ipadresim",
+  })
+    .then(function (response) {
+      return response.data;
+    })
+    .then(function (a) {
+      benimIP = a;
+    });
+}
 // ------------ değiştirmeyin --------------
-
 
 /*
 	ADIM 1: axios kullanarak, aşağıdaki URL'ye GET sorgusu atacağız
@@ -67,6 +66,71 @@ async function ipAdresimiAl(){
 	Örnek dinamik URL kullanımı: var url = "https://apis.ergineer.com/ipgeoapi/"+benimIP; 
 */
 
-
-
 //kodlar buraya gelecek
+
+// --- Değiştirmeyin ---
+
+async function getIPInfo() {
+  try {
+    const response = await axios.get("https://apis.ergineer.com/ipadresim");
+    const myIP = response.data;
+    const apiUrl = `https://apis.ergineer.com/ipgeoapi/${myIP}`;
+    const apiResponse = await axios.get(apiUrl);
+    const data = apiResponse.data;
+    createIPInfoCard(data);
+  } catch (error) {
+    console.error("API sorgusu başarısız: " + error);
+  }
+}
+
+function createIPInfoCard(data) {
+  var cardContainer = document.querySelector(".cards");
+
+  var card = document.createElement("div");
+  card.className = "card";
+
+  var img = document.createElement("img");
+  img.src = data.ülkebayrağı;
+
+  var cardInfo = document.createElement("div");
+  cardInfo.className = "card-info";
+
+  var ipAddress = document.createElement("h3");
+  ipAddress.className = "ip";
+  ipAddress.textContent = data.sorgu;
+
+  var countryInfo = document.createElement("p");
+  countryInfo.className = "ulke";
+  countryInfo.textContent = `${data.ülke} (${data.ülkeKodu})`;
+
+  var coordinates = document.createElement("p");
+  coordinates.textContent = `Enlem: ${data.enlem} Boylam: ${data.boylam}`;
+
+  var city = document.createElement("p");
+  city.textContent = `Şehir: ${data.bölgeAdı}`;
+
+  var timeZone = document.createElement("p");
+  timeZone.textContent = `Saat Dilimi: ${data.saatdilimi}`;
+
+  var currency = document.createElement("p");
+  currency.textContent = `Para Birimi: ${data.parabirimi}`;
+
+  var isp = document.createElement("p");
+  isp.textContent = `ISP: ${data.isp}`;
+
+  cardInfo.appendChild(ipAddress);
+  cardInfo.appendChild(countryInfo);
+  cardInfo.appendChild(coordinates);
+  cardInfo.appendChild(city);
+  cardInfo.appendChild(timeZone);
+  cardInfo.appendChild(currency);
+  cardInfo.appendChild(isp);
+
+  card.appendChild(img);
+  card.appendChild(cardInfo);
+
+  cardContainer.appendChild(card);
+}
+
+ipAdresimiAl();
+getIPInfo();
